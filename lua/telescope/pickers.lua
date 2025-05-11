@@ -140,6 +140,15 @@ local function default_create_layout(picker)
       vim.schedule(function()
         utils.buf_delete(self.prompt.bufnr)
       end)
+      vim.schedule(function()
+        utils.buf_delete(self.prompt.bufnr)
+        vim.api.nvim_exec_autocmds("User", {
+          pattern = "TelescopePickerClose",
+          data = {
+            prompt_bufnr = self.prompt.bufnr,
+          },
+        })
+      end)
     end,
     ---@param self TelescopeLayout
     update = function(self)
@@ -175,7 +184,7 @@ local function default_create_layout(picker)
           local preview_bufnr = (self.preview and self.preview.bufnr ~= nil)
               and vim.api.nvim_buf_is_valid(self.preview.bufnr)
               and self.preview.bufnr
-            or ""
+              or ""
           preview_win, preview_opts = picker:_create_window(preview_bufnr, popup_opts.preview)
           if preview_bufnr == "" then
             preview_bufnr = a.nvim_win_get_buf(preview_win)
@@ -249,7 +258,7 @@ function Picker:new(opts)
 
   local layout_strategy = vim.F.if_nil(opts.layout_strategy, config.values.layout_strategy)
   local winblend =
-    vim.F.if_nil(opts.winblend, type(opts.window) == "table" and opts.window.winblend or config.values.winblend)
+      vim.F.if_nil(opts.winblend, type(opts.window) == "table" and opts.window.winblend or config.values.winblend)
   if type(winblend) == "function" then
     winblend = winblend()
   end
@@ -292,7 +301,7 @@ function Picker:new(opts)
     manager = (type(opts.manager) == "table" and getmetatable(opts.manager) == EntryManager) and opts.manager,
     _multi = (type(opts._multi) == "table" and getmetatable(opts._multi) == getmetatable(MultiSelect:new()))
         and opts._multi
-      or MultiSelect:new(),
+        or MultiSelect:new(),
 
     track = vim.F.if_nil(opts.track, false),
     stats = {},
@@ -338,9 +347,9 @@ function Picker:new(opts)
     end
     obj.previewer = obj.all_previewers[obj.current_previewer_index]
     if
-      obj.preview_title == nil
-      or #obj.all_previewers > 1
-      or opts.resumed_picker and opts.fix_preview_title ~= true
+        obj.preview_title == nil
+        or #obj.all_previewers > 1
+        or opts.resumed_picker and opts.fix_preview_title ~= true
     then
       obj.preview_title = obj.previewer:title(nil, config.values.dynamic_preview_title)
     else
@@ -547,18 +556,18 @@ function Picker:find()
 
   self.layout = layout
   self.prompt_win, self.prompt_bufnr, self.prompt_border =
-    layout.prompt.winid, layout.prompt.bufnr, layout.prompt.border
+      layout.prompt.winid, layout.prompt.bufnr, layout.prompt.border
   self.results_win, self.results_bufnr, self.results_border =
-    layout.results.winid, layout.results.bufnr, layout.results.border
+      layout.results.winid, layout.results.bufnr, layout.results.border
   if layout.preview then
     self.preview_win, self.preview_bufnr, self.preview_border =
-      layout.preview.winid, layout.preview.bufnr, layout.preview.border
+        layout.preview.winid, layout.preview.bufnr, layout.preview.border
   else
     self.preview_win, self.preview_bufnr, self.preview_border = nil, nil, nil
   end
 
   pcall(a.nvim_buf_set_option, self.results_bufnr, "tabstop", 1) -- #1834
-  pcall(a.nvim_buf_set_option, self.prompt_bufnr, "tabstop", 1) -- #1834
+  pcall(a.nvim_buf_set_option, self.prompt_bufnr, "tabstop", 1)  -- #1834
   a.nvim_buf_set_option(self.prompt_bufnr, "buftype", "prompt")
   a.nvim_win_set_option(self.results_win, "wrap", self.wrap_results)
   a.nvim_win_set_option(self.prompt_win, "wrap", true)
@@ -754,12 +763,12 @@ function Picker:recalculate_layout()
 
   local layout = status.layout
   self.prompt_win, self.prompt_bufnr, self.prompt_border =
-    layout.prompt.winid, layout.prompt.bufnr, layout.prompt.border
+      layout.prompt.winid, layout.prompt.bufnr, layout.prompt.border
   self.results_win, self.results_bufnr, self.results_border =
-    layout.results.winid, layout.results.bufnr, layout.results.border
+      layout.results.winid, layout.results.bufnr, layout.results.border
   if layout.preview then
     self.preview_win, self.preview_bufnr, self.preview_border =
-      layout.preview.winid, layout.preview.bufnr, layout.preview.border
+        layout.preview.winid, layout.preview.bufnr, layout.preview.border
   else
     self.preview_win, self.preview_bufnr, self.preview_border = nil, nil, nil
   end
@@ -1184,9 +1193,9 @@ function Picker:update_prefix(entry, row)
   end
 
   local old_caret = string.sub(line, 0, #prefix(true)) == prefix(true) and prefix(true)
-    or string.sub(line, 0, #prefix(true, true)) == prefix(true, true) and prefix(true, true)
-    or string.sub(line, 0, #prefix(false)) == prefix(false) and prefix(false)
-    or string.sub(line, 0, #prefix(false, true)) == prefix(false, true) and prefix(false, true)
+      or string.sub(line, 0, #prefix(true, true)) == prefix(true, true) and prefix(true, true)
+      or string.sub(line, 0, #prefix(false)) == prefix(false) and prefix(false)
+      or string.sub(line, 0, #prefix(false, true)) == prefix(false, true) and prefix(false, true)
   if old_caret == false then
     log.warn(string.format("can't identify old caret in line: %s", line))
     return
@@ -1202,10 +1211,10 @@ end
 function Picker:refresh_previewer()
   local status = state.get_status(self.prompt_bufnr)
   if
-    self.previewer
-    and status.layout.preview
-    and status.layout.preview.winid
-    and a.nvim_win_is_valid(status.layout.preview.winid)
+      self.previewer
+      and status.layout.preview
+      and status.layout.preview.winid
+      and a.nvim_win_is_valid(status.layout.preview.winid)
   then
     self:_increment "previewed"
 
@@ -1650,8 +1659,8 @@ end
 function Picker:_get_prompt()
   local cursor_line = vim.api.nvim_win_get_cursor(self.prompt_win)[1] - 1
   return vim.api
-    .nvim_buf_get_lines(self.prompt_bufnr, cursor_line, cursor_line + 1, false)[1]
-    :sub(#self.prompt_prefix + 1)
+      .nvim_buf_get_lines(self.prompt_bufnr, cursor_line, cursor_line + 1, false)[1]
+      :sub(#self.prompt_prefix + 1)
 end
 
 function Picker:_reset_highlights()
